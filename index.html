@@ -19,8 +19,23 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
         .animate-fade-in {
             animation: fadeIn 0.5s ease-out forwards;
+        }
+        .animate-slide-in-up {
+            animation: slideInUp 0.6s ease-out forwards;
+            animation-delay: 0.2s;
+            opacity: 0;
         }
         .back-button-container {
             position: absolute;
@@ -156,15 +171,36 @@
     const SpeakerIcon = () => `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>`;
     const ShuffleIcon = () => `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H9m0 0l3 3m-3-3l3-3m5 13H5a2 2 0 01-2-2V6a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" /></svg>`;
     const RestartIcon = () => `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M20 20v-5h-5M4 4l1.5 1.5A9 9 0 0120.5 10.5M20 20l-1.5-1.5A9 9 0 003.5 13.5" /></svg>`;
-
+    const StudiousPandaIcon = () => `<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M49.9999 96.6667C75.7738 96.6667 96.6666 75.7738 96.6666 50C96.6666 24.2261 75.7738 3.33331 49.9999 3.33331C24.226 3.33331 3.33325 24.2261 3.33325 50C3.33325 75.7738 24.226 96.6667 49.9999 96.6667Z" fill="#F3E8D8"/>
+        <path d="M78 68.3333C78 77.5381 70.2048 85 61 85C51.7952 85 44 77.5381 44 68.3333C44 59.1286 51.7952 51.6666 61 51.6666C70.2048 51.6666 78 59.1286 78 68.3333Z" fill="#2D3748"/>
+        <path d="M39 85C29.7952 85 22 77.5381 22 68.3333C22 59.1286 29.7952 51.6666 39 51.6666C48.2048 51.6666 56 59.1286 56 68.3333C56 77.5381 48.2048 85 39 85Z" fill="#2D3748"/>
+        <path d="M50 81.6667C63.2548 81.6667 74 70.9215 74 57.6667C74 44.4119 63.2548 33.6667 50 33.6667C36.7452 33.6667 26 44.4119 26 57.6667C26 70.9215 36.7452 81.6667 50 81.6667Z" fill="white"/>
+        <path d="M64 56.6667C64 60.1645 61.2018 63 57.6667 63C54.1316 63 51.3334 60.1645 51.3334 56.6667C51.3334 53.1689 54.1316 50.3333 57.6667 50.3333C61.2018 50.3333 64 53.1689 64 56.6667Z" fill="#2D3748"/>
+        <path d="M48.6667 63C45.1316 63 42.3334 60.1645 42.3334 56.6667C42.3334 53.1689 45.1316 50.3333 48.6667 50.3333C52.2018 50.3333 55 53.1689 55 56.6667C55 60.1645 52.2018 63 48.6667 63Z" fill="#2D3748"/>
+        <path d="M50 64.3333C52.0711 64.3333 53.75 62.6544 53.75 60.5833C53.75 58.5122 52.0711 56.8333 50 56.8333C47.9289 56.8333 46.25 58.5122 46.25 60.5833C46.25 62.6544 47.9289 64.3333 50 64.3333Z" fill="#2D3748"/>
+        <path d="M53.5 70.1667C53.5 71.0871 51.933 71.8333 50 71.8333C48.067 71.8333 46.5 71.0871 46.5 70.1667C46.5 69.2462 48.067 68.5 50 68.5C51.933 68.5 53.5 69.2462 53.5 70.1667Z" fill="#2D3748"/>
+        <path d="M80.5 35.8333C80.5 37.8442 78.8807 39.5 76.8333 39.5H23.1667C21.1193 39.5 19.5 37.8442 19.5 35.8333C19.5 33.8224 21.1193 32.1666 23.1667 32.1666H76.8333C78.8807 32.1666 80.5 33.8224 80.5 35.8333Z" fill="#2D3748" stroke="#F3E8D8" stroke-width="3"/>
+        </svg>`;
 
     // --- VIEW TEMPLATES ---
     const HomeView = () => `
         <div class="animate-fade-in text-center">
-            <header class="mb-12">
+            <header class="mb-8">
                 <h1 class="text-4xl md:text-5xl font-bold text-gray-800">Học Từ Vựng Tiếng Nhật</h1>
                 <p class="mt-4 text-lg text-gray-600">Chọn một bài học để bắt đầu ôn tập.</p>
             </header>
+
+            <div class="animate-slide-in-up max-w-2xl mx-auto mb-12 bg-white rounded-xl shadow-lg p-6 border border-rose-100 flex flex-col sm:flex-row items-center gap-6">
+                <div class="w-24 h-24 text-rose-400">
+                    ${StudiousPandaIcon()}
+                </div>
+                <div class="text-center sm:text-left">
+                    <h3 class="text-2xl font-bold text-gray-800">Cô Sương chúc các bạn thi tốt!</h3>
+                    <p class="mt-1 text-gray-600">Hãy giữ vững tinh thần và ôn tập thật kỹ nhé!</p>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
                 ${[1, 2, 3].map(lessonNum => `
                     <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-shadow duration-300">
