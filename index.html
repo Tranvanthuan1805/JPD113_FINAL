@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Học Từ Vựng Tiếng Nhật</title>
+    <title>Học Từ Vựng và Ngữ Pháp Tiếng Nhật</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,6 +14,7 @@
             font-family: 'Noto Sans JP', sans-serif;
             background-color: #f8f9fa;
             color: #343a40;
+            overflow-x: hidden;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -41,7 +42,7 @@
             position: absolute;
             top: 1.5rem;
             left: 1.5rem;
-            z-index: 10;
+            z-index: 20;
         }
         /* Flashcard styles */
         .flashcard-scene {
@@ -83,10 +84,76 @@
         .hidden {
             display: none;
         }
+
+        /* Sakura Effect */
+        #sakura-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        .sakura {
+            position: absolute;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 0 C60 0 70 10 70 20 C70 30 60 40 50 40 C40 40 30 30 30 20 C30 10 40 0 50 0 M50 40 C60 40 70 50 70 60 C70 70 60 80 50 80 C40 80 30 70 30 60 C30 50 40 40 50 40 M50 80 C60 80 70 90 70 100 C70 90 60 80 50 80" fill="%23FFC0CB" opacity="0.7"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            width: 20px;
+            height: 20px;
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) translateX(15vw) rotate(720deg); opacity: 0; }
+        }
+
+        /* Music Player */
+        #music-player {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 50;
+            cursor: pointer;
+        }
+        #cd-icon {
+            width: 50px;
+            height: 50px;
+            transition: transform 0.3s ease;
+        }
+        #cd-icon.spinning {
+            animation: spin 2s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
-    <div id="app-container" class="min-h-screen p-4 sm:p-6 lg:p-8"></div>
+    <div id="sakura-container"></div>
+    <div id="app-container" class="min-h-screen p-4 sm:p-6 lg:p-8 relative z-10"></div>
+
+    <div id="music-player" title="Play/Pause Music">
+        <svg id="cd-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="48" fill="#2D3748"/>
+            <circle cx="50" cy="50" r="40" fill="url(#grad)"/>
+            <circle cx="50" cy="50" r="15" fill="#f8f9fa"/>
+            <circle cx="50" cy="50" r="8" fill="#2D3748"/>
+            <defs>
+                <radialGradient id="grad">
+                    <stop offset="20%" stop-color="#81E6D9"/>
+                    <stop offset="95%" stop-color="#319795"/>
+                </radialGradient>
+            </defs>
+        </svg>
+    </div>
+    <audio id="bg-music" loop>
+        <source src="https://cdn.pixabay.com/audio/2022/10/19/audio_313aad52c8.mp3" type="audio/mpeg">
+        Trình duyệt của bạn không hỗ trợ phát âm thanh.
+    </audio>
+
 
     <script type="module">
     // --- DATA ---
@@ -133,6 +200,31 @@
                         { japanese: '誕生日', hiragana: 'たんじょうび', vietnamese: 'Ngày sinh / Sinh nhật' },
                         { japanese: 'ブラジル', hiragana: 'ブラジル', vietnamese: 'Brazil' },
                         { japanese: 'いつ', hiragana: 'いつ', vietnamese: 'Lúc nào / Khi nào' },
+                        { japanese: '一月', hiragana: 'いちがつ', vietnamese: 'Tháng 1' },
+                        { japanese: '二月', hiragana: 'にがつ', vietnamese: 'Tháng 2' },
+                        { japanese: '三月', hiragana: 'さんがつ', vietnamese: 'Tháng 3' },
+                        { japanese: '四月', hiragana: 'しがつ', vietnamese: 'Tháng 4' },
+                        { japanese: '五月', hiragana: 'ごがつ', vietnamese: 'Tháng 5' },
+                        { japanese: '六月', hiragana: 'ろくがつ', vietnamese: 'Tháng 6' },
+                        { japanese: '七月', hiragana: 'しちがつ', vietnamese: 'Tháng 7' },
+                        { japanese: '八月', hiragana: 'はちがつ', vietnamese: 'Tháng 8' },
+                        { japanese: '九月', hiragana: 'くがつ', vietnamese: 'Tháng 9' },
+                        { japanese: '十月', hiragana: 'じゅうがつ', vietnamese: 'Tháng 10' },
+                        { japanese: '十一月', hiragana: 'じゅういちがつ', vietnamese: 'Tháng 11' },
+                        { japanese: '十二月', hiragana: 'じゅうにがつ', vietnamese: 'Tháng 12' },
+                        { japanese: '一日', hiragana: 'ついたち', vietnamese: 'Ngày 1' },
+                        { japanese: '二日', hiragana: 'ふつか', vietnamese: 'Ngày 2' },
+                        { japanese: '三日', hiragana: 'みっか', vietnamese: 'Ngày 3' },
+                        { japanese: '四日', hiragana: 'よっか', vietnamese: 'Ngày 4' },
+                        { japanese: '五日', hiragana: 'いつか', vietnamese: 'Ngày 5' },
+                        { japanese: '六日', hiragana: 'むいか', vietnamese: 'Ngày 6' },
+                        { japanese: '七日', hiragana: 'なのか', vietnamese: 'Ngày 7' },
+                        { japanese: '八日', hiragana: 'ようか', vietnamese: 'Ngày 8' },
+                        { japanese: '九日', hiragana: 'ここのか', vietnamese: 'Ngày 9' },
+                        { japanese: '十日', hiragana: 'とおか', vietnamese: 'Ngày 10' },
+                        { japanese: '二十日', hiragana: 'はつか', vietnamese: 'Ngày 20' },
+                        { japanese: '〜才', hiragana: '〜さい', vietnamese: '〜 tuổi' },
+                        { japanese: '何才', hiragana: 'なんさい', vietnamese: 'Mấy tuổi' },
                     ]
                 },
                 {
@@ -140,21 +232,260 @@
                     items: [
                         { japanese: 'しゅみ', hiragana: 'しゅみ', vietnamese: 'Sở thích' },
                         { japanese: 'スポーツ', hiragana: 'スポーツ', vietnamese: 'Thể thao' },
+                        { japanese: 'サッカー', hiragana: 'サッカー', vietnamese: 'Bóng đá' },
+                        { japanese: 'テニス', hiragana: 'テニス', vietnamese: 'Tennis (Quần vợt)' },
+                        { japanese: 'すいえい', hiragana: 'すいえい', vietnamese: 'Bơi lội' },
+                        { japanese: 'えいが', hiragana: 'えいが', vietnamese: 'Phim ảnh' },
+                        { japanese: 'おんがく', hiragana: 'おんがく', vietnamese: 'Âm nhạc' },
+                        { japanese: 'どくしょ', hiragana: 'どくしょ', vietnamese: 'Đọc sách' },
+                        { japanese: 'りょこう', hiragana: 'りょこう', vietnamese: 'Du lịch' },
+                        { japanese: 'りょうり', hiragana: 'りょうり', vietnamese: 'Nấu ăn / Món ăn' },
+                        { japanese: '何', hiragana: 'なん', vietnamese: 'Cái gì' },
+                        { japanese: 'おなじですね', hiragana: 'おなじですね', vietnamese: 'Giống nhau nhỉ.' },
                     ]
                 }
             ],
             kanji: [
                  { character: '私', hanViet: 'TƯ', meaning: 'Tôi, riêng tư', examples: [{ word: '私', meaning: 'Tôi', reading: 'わたし' }] },
-                 { character: '人', hanViet: 'NHÂN', meaning: 'Người', examples: [{ word: '1人', meaning: '1 người', reading: 'ひとり' }, { word: '2人', meaning: '2 người', reading: 'ふたり' }] },
+                 { character: '人', hanViet: 'NHÂN', meaning: 'Người', examples: [{ word: '1人', meaning: '1 người', reading: 'ひとり' }, { word: '2人', meaning: '2 người', reading: 'ふたり' }, { word: 'ベトナム人', meaning: 'Người Việt Nam', reading: 'ベトナムじん'}] },
+                 { character: '才', hanViet: 'TÀI', meaning: 'Tuổi (hậu tố)', examples: [{ word: '1才', meaning: '1 tuổi', reading: 'いっさい' }, { word: '18才', meaning: '18 tuổi', reading: 'じゅうはっさい' }] },
+                 { character: '学', hanViet: 'HỌC', meaning: 'Học tập', examples: [{ word: '学生', meaning: 'Học sinh', reading: 'がくせい' }, { word: '学校', meaning: 'Trường học', reading: 'がっこう' }] },
+                 { character: '生', hanViet: 'SINH', meaning: 'Sống, sinh sôi', examples: [{ word: '学生', meaning: 'Học sinh', reading: 'がくせい' }, { word: '先生', meaning: 'Thầy cô', reading: 'せんせい' }] },
+                 { character: '校', hanViet: 'HIỆU', meaning: 'Trường học', examples: [{ word: '学校', meaning: 'Trường học', reading: 'がっこう' }] },
+                 { character: '日', hanViet: 'NHẬT', meaning: 'Ngày, Nhật Bản', examples: [{ word: '1日', meaning: 'Ngày 1', reading: 'ついたち' }, { word: '2日', meaning: 'Ngày 2', reading: 'ふつか' }] },
+                 { character: '本', hanViet: 'BẢN', meaning: 'Gốc, cơ bản, sách', examples: [{ word: '日本', meaning: 'Nhật Bản', reading: 'にほん' }] },
+                 { character: '語', hanViet: 'NGỮ', meaning: 'Ngôn ngữ', examples: [{ word: '日本語', meaning: 'Tiếng Nhật', reading: 'にほんご' }, { word: 'ベトナム語', meaning: 'Tiếng Việt', reading: 'ベトナムご' }] },
+            ],
+            grammar: [
+                { pattern: "N1 は N2 です。", meaning: "Câu khẳng định N1 là N2", explanation: "N1: Chủ ngữ. N2: Vị ngữ chứa thông tin liên quan đến N1 (tên, nghề nghiệp, tuổi,...)", vietnamese: "Aさんは 学生です。", japanese: "A san wa gakusei desu." },
+                { pattern: "N1 は〜の N2 です。", meaning: "Câu khẳng định mở rộng, N1 là N2 của/thuộc về ~", explanation: "Nói rõ N1 thuộc về nhóm, đối tượng, hoặc vị trí nào đó.", vietnamese: "やまださんは FPT のしゃいんです。", japanese: "Yamada san wa FPT no shain desu." },
+                { pattern: "N1 の〜は N2 です。", meaning: "Câu khẳng định mở rộng ~ của/thuộc về N1 là N2", explanation: "Xác định thông tin cụ thể của chủ ngữ N1.", vietnamese: "わたしの しゅみは えいがです。", japanese: "Watashi no shumi wa eiga desu." },
+                { pattern: "N1 も N2 です。", meaning: "Câu khẳng định N1 cũng (là) N2", explanation: "N2 giống với thông tin trước đó.", vietnamese: "わたしは はたちです。Bさんも はたちです。", japanese: "Watashi wa hatachi desu. B san mo hatachi desu." },
+                { pattern: "N1 は N2 じゃありません。", meaning: "Câu phủ định N1 không phải (là) N2", explanation: "Dùng để phủ định thông tin về N1.", vietnamese: "さとさんは 日本人じゃありません。", japanese: "Sato san wa nihonjin ja arimasen." },
+                { pattern: "N1 と N2", meaning: "N1 và N2 (nối 2 danh từ cùng vai vế)", explanation: "Liệt kê hai danh từ với mối quan hệ ngang hàng.", vietnamese: "私の しゅみは りょこうと りょうりです。", japanese: "Watashi no shumi wa ryokou to ryouri desu." },
+                { pattern: "N は Từ hỏi ですか。", meaning: "Câu hỏi dạng có từ hỏi (địa điểm, thông tin, thời gian,...)", explanation: "Từ hỏi (xem bảng từ hỏi)", vietnamese: "A: Bさんの くには どちらですか。 B: 日本です。", japanese: "A: B san no kuni wa dochira desu ka. B: Nihon desu." },
+                { pattern: "N は？", meaning: "Câu hỏi dạng rút gọn từ hỏi (N là/thì...?)", explanation: "Câu hỏi không đầy đủ, thường dùng trong giao tiếp tự nhiên.", vietnamese: "A: おなまえは？ B: アンです。", japanese: "A: Onamae wa? B: An desu." },
+                { pattern: "N1 は N2 ですか。", meaning: "Câu hỏi dạng Yes/No, N1 có phải là N2 không?", explanation: "Câu hỏi xác nhận thông tin.", vietnamese: "A: Aさんの たんじょうびは 5がつですか。 B: はい、5がつです。", japanese: "A: A san no tanjoubi wa gogatsu desu ka. B: Hai, gogatsu desu." }
             ]
         },
-        { vocabulary: [], kanji: [] },
-        { vocabulary: [], kanji: [] }
+        { // Lesson 2
+             vocabulary: [
+                { title: "Phần 1: Hỏi vị trí", items: [
+                    { japanese: "ここ/こちら", hiragana: "ここ/こちら", vietnamese: "Đây, chỗ này / Phía này" },
+                    { japanese: "そこ/そちら", hiragana: "そこ/そちら", vietnamese: "Đó, chỗ đó / Phía đó" },
+                    { japanese: "あそこ/あちら", hiragana: "あそこ/あちら", vietnamese: "Kia, chỗ kia / Phía kia" },
+                    { japanese: "インフォメーション", hiragana: "インフォメーション", vietnamese: "Quầy thông tin" },
+                    { japanese: "ATM", hiragana: "ATM", vietnamese: "Máy rút tiền tự động" },
+                    { japanese: "エスカレーター", hiragana: "エスカレーター", vietnamese: "Thang cuốn" },
+                    { japanese: "エレベーター", hiragana: "エレベーター", vietnamese: "Thang máy" },
+                    { japanese: "きつえんじょ", hiragana: "きつえんじょ", vietnamese: "Nơi hút thuốc" },
+                    { japanese: "トイレ", hiragana: "トイレ", vietnamese: "Nhà vệ sinh" },
+                    { japanese: "レジ", hiragana: "レジ", vietnamese: "Quầy thu ngân" },
+                    { japanese: "きっさてん", hiragana: "きっさてん", vietnamese: "Quán giải khát" },
+                    { japanese: "スーパー", hiragana: "スーパー", vietnamese: "Siêu thị" },
+                    { japanese: "100円ショップ", hiragana: "ひゃくえんショップ", vietnamese: "Cửa hàng 100 Yên" },
+                    { japanese: "レストラン", hiragana: "レストラン", vietnamese: "Nhà hàng, quán ăn" },
+                    { japanese: "ちか", hiragana: "ちか", vietnamese: "Ngầm, dưới lòng đất" },
+                    { japanese: "カメラ", hiragana: "カメラ", vietnamese: "Máy ảnh" },
+                    { japanese: "けいたいでんわ", hiragana: "けいたいでんわ", vietnamese: "Điện thoại di động" },
+                    { japanese: "でんしじしょ", hiragana: "でんしじしょ", vietnamese: "Kim từ điển" },
+                    { japanese: "パソコン", hiragana: "パソコン", vietnamese: "Máy tính cá nhân" },
+                    { japanese: "くつ", hiragana: "くつ", vietnamese: "Giày" },
+                    { japanese: "けしゴム", hiragana: "けしゴム", vietnamese: "Tẩy" },
+                    { japanese: "ペン", hiragana: "ペン", vietnamese: "Bút" },
+                    { japanese: "トイレットペーパー", hiragana: "トイレットペーパー", vietnamese: "Giấy vệ sinh" },
+                    { japanese: "本", hiragana: "ほん", vietnamese: "Sách" },
+                    { japanese: "あぶら", hiragana: "あぶら", vietnamese: "Dầu" },
+                    { japanese: "ケーキ", hiragana: "ケーキ", vietnamese: "Bánh ngọt" },
+                    { japanese: "こめ", hiragana: "こめ", vietnamese: "Gạo" },
+                    { japanese: "たまご", hiragana: "たまご", vietnamese: "Trứng" },
+                    { japanese: "パン", hiragana: "パン", vietnamese: "Bánh mỳ" },
+                    { japanese: "てんいん", hiragana: "てんいん", vietnamese: "Nhân viên bán hàng" },
+                    { japanese: "〜かい", hiragana: "〜かい", vietnamese: "Tầng ~" },
+                    { japanese: "いらっしゃいませ", hiragana: "いらっしゃいませ", vietnamese: "Kính chào quý khách" },
+                ]},
+                { title: "Phần 2: Hỏi giá tiền", items: [
+                    { japanese: "これ", hiragana: "これ", vietnamese: "Cái này" },
+                    { japanese: "それ", hiragana: "それ", vietnamese: "Cái đó" },
+                    { japanese: "あれ", hiragana: "あれ", vietnamese: "Cái kia" },
+                    { japanese: "この〜", hiragana: "この〜", vietnamese: "Cái ~ này" },
+                    { japanese: "その〜", hiragana: "その〜", vietnamese: "Cái ~ đó" },
+                    { japanese: "あの〜", hiragana: "あの〜", vietnamese: "Cái ~ kia" },
+                    { japanese: "かばん", hiragana: "かばん", vietnamese: "Cặp, túi xách" },
+                    { japanese: "ズボン", hiragana: "ズボン", vietnamese: "Quần dài" },
+                    { japanese: "Tシャツ", hiragana: "Tシャツ", vietnamese: "Áo phông" },
+                    { japanese: "とけい", hiragana: "とけい", vietnamese: "Đồng hồ" },
+                    { japanese: "〜円", hiragana: "〜えん", vietnamese: "〜 Yên" },
+                    { japanese: "いくら", hiragana: "いくら", vietnamese: "Bao nhiêu tiền" },
+                ]},
+                { title: "Phần 3: Ở nhà hàng", items: [
+                    { japanese: "さかな", hiragana: "さかな", vietnamese: "Cá" },
+                    { japanese: "にく", hiragana: "にく", vietnamese: "Thịt" },
+                    { japanese: "ぎゅうにく", hiragana: "ぎゅうにく", vietnamese: "Thịt bò" },
+                    { japanese: "ぶたにく", hiragana: "ぶたにく", vietnamese: "Thịt lợn" },
+                    { japanese: "やさい", hiragana: "やさい", vietnamese: "Rau" },
+                    { japanese: "いちご", hiragana: "いちご", vietnamese: "Quả dâu" },
+                    { japanese: "りんご", hiragana: "りんご", vietnamese: "Quả táo" },
+                    { japanese: "りょうり", hiragana: "りょうり", vietnamese: "Món ăn / Nấu ăn" },
+                    { japanese: "カレー", hiragana: "カレー", vietnamese: "Món cà-ri" },
+                    { japanese: "スープ", hiragana: "スープ", vietnamese: "Canh, súp" },
+                    { japanese: "とんかつ", hiragana: "とんかつ", vietnamese: "Món thịt lợn chiên xù" },
+                    { japanese: "ハンバーグ", hiragana: "ハンバーグ", vietnamese: "Món thịt băm viên" },
+                    { japanese: "ごはん", hiragana: "ごはん", vietnamese: "Cơm" },
+                    { japanese: "ライス", hiragana: "ライス", vietnamese: "Cơm, gạo" },
+                    { japanese: "ジュース", hiragana: "ジュース", vietnamese: "Nước ngọt, nước trái cây" },
+                    { japanese: "コーヒー", hiragana: "コーヒー", vietnamese: "Cà phê" },
+                    { japanese: "こうちゃ", hiragana: "こうちゃ", vietnamese: "Trà đen" },
+                    { japanese: "ビール", hiragana: "ビール", vietnamese: "Bia" },
+                    { japanese: "ワイン", hiragana: "ワイン", vietnamese: "Rượu vang" },
+                    { japanese: "ちゅうもんを おねがいします", hiragana: "ちゅうもんを おねがいします", vietnamese: "Cho tôi gọi đồ." },
+                    { japanese: "どうぞ", hiragana: "どうぞ", vietnamese: "Xin mời" }
+                ]}
+            ],
+            kanji: [
+                { character: '一', hanViet: 'NHẤT', meaning: 'Một', examples: [{ word: '一月', reading: 'いちがつ', meaning: 'Tháng 1' }, { word: '一日', reading: 'ついたち', meaning: 'Ngày mùng 1' }] },
+                { character: '二', hanViet: 'NHỊ', meaning: 'Hai', examples: [{ word: '二月', reading: 'にがつ', meaning: 'Tháng 2' }, { word: '二日', reading: 'ふつか', meaning: 'Ngày mùng 2' }] },
+                { character: '三', hanViet: 'TAM', meaning: 'Ba', examples: [{ word: '三月', reading: 'さんがつ', meaning: 'Tháng 3' }, { word: '三日', reading: 'みっか', meaning: 'Ngày mùng 3' }] },
+                { character: '四', hanViet: 'TỨ', meaning: 'Bốn', examples: [{ word: '四月', reading: 'しがつ', meaning: 'Tháng 4' }, { word: '四日', reading: 'よっか', meaning: 'Ngày mùng 4' }] },
+                { character: '五', hanViet: 'NGŨ', meaning: 'Năm', examples: [{ word: '五月', reading: 'ごがつ', meaning: 'Tháng 5' }, { word: '五日', reading: 'いつか', meaning: 'Ngày mùng 5' }] },
+                { character: '六', hanViet: 'LỤC', meaning: 'Sáu', examples: [{ word: '六月', reading: 'ろくがつ', meaning: 'Tháng 6' }, { word: '六日', reading: 'むいか', meaning: 'Ngày mùng 6' }] },
+                { character: '七', hanViet: 'THẤT', meaning: 'Bảy', examples: [{ word: '七月', reading: 'しちがつ', meaning: 'Tháng 7' }, { word: '七日', reading: 'なのか', meaning: 'Ngày mùng 7' }] },
+                { character: '八', hanViet: 'BÁT', meaning: 'Tám', examples: [{ word: '八月', reading: 'はちがつ', meaning: 'Tháng 8' }, { word: '八日', reading: 'ようか', meaning: 'Ngày mùng 8' }] },
+                { character: '九', hanViet: 'CỬU', meaning: 'Chín', examples: [{ word: '九月', reading: 'くがつ', meaning: 'Tháng 9' }, { word: '九日', reading: 'ここのか', meaning: 'Ngày mùng 9' }] },
+                { character: '十', hanViet: 'THẬP', meaning: 'Mười', examples: [{ word: '十月', reading: 'じゅうがつ', meaning: 'Tháng 10' }, { word: '十日', reading: 'とおか', meaning: 'Ngày mùng 10' }] },
+                { character: '百', hanViet: 'BÁCH', meaning: 'Trăm', examples: [{ word: '三百', reading: 'さんびゃく', meaning: '300' }, { word: '六百', reading: 'ろっぴゃく', meaning: '600' }] },
+                { character: '千', hanViet: 'THIÊN', meaning: 'Nghìn', examples: [{ word: '三千', reading: 'さんぜん', meaning: '3000' }, { word: '八千', reading: 'はっせん', meaning: '8000' }] },
+                { character: '万', hanViet: 'VẠN', meaning: 'Mười nghìn', examples: [{ word: '一万', reading: 'いちまん', meaning: '1 vạn (10.000)' }] },
+                { character: '円', hanViet: 'VIÊN', meaning: 'Yên (tiền)', examples: [{ word: '百円', reading: 'ひゃくえん', meaning: '100 yên' }, { word: '一万円', reading: 'いちまんえん', meaning: '10.000 yên' }] },
+            ],
+            grammar: [
+                { pattern: "ここ/そこ/あそこ は N です。", meaning: "Chỗ này/đó/kia là N", explanation: "Dùng để chỉ địa điểm", vietnamese: "トイレは どこですか。・・・あそこです。", japanese: "Toire wa doko desu ka. ... Asoko desu." },
+                { pattern: "N を（〜つ）ください", meaning: "Hãy cho tôi N", explanation: "Dùng để yêu cầu đối phương đưa cho mình 1 vật. Ví dụ dùng trong bối cảnh mua hàng.", vietnamese: "そのTシャツを ください。", japanese: "Sono T-shatsu o kudasai." },
+                { pattern: "いくらですか", meaning: "Bao nhiêu tiền", explanation: "Dùng để hỏi giá tiền", vietnamese: "これは いくらですか。・・・10,000えんです。", japanese: "Kore wa ikura desu ka. ... Ichiman en desu." },
+                { pattern: "なんの N", meaning: "N từ thành phần gì / N thuộc loại gì", explanation: "Dùng để hỏi loại danh từ", vietnamese: "これは なんの カレーですか。・・・ぶたにくの カレーです。", japanese: "Kore wa nan no karee desu ka. ... Butaniku no karee desu." },
+                { pattern: "どこの N", meaning: "N của nước nào / hãng nào", explanation: "Dùng để hỏi xuất xứ", vietnamese: "これは どこの ビールですか。・・・ドイツの ビールです。", japanese: "Kore wa doko no biiru desu ka. ... Doitsu no biiru desu." },
+                { pattern: "だれの N", meaning: "N của ai", explanation: "Dùng để hỏi về sở hữu", vietnamese: "これは だれの さいふですか。・・・わたしの さいふです。", japanese: "Kore wa dare no saifu desu ka. ... Watashi no saifu desu." },
+                { pattern: "「A」は〜ごで なんですか。", meaning: "Thuật ngữ “A” trong tiếng ~ là gì?", explanation: "Dùng để hỏi cách nói trong ngôn ngữ khác", vietnamese: "「ぶたにく」は えいごで なんですか。", japanese: "「Butaniku」 wa eigo de nan desu ka." }
+            ]
+        },
+        { // Lesson 3
+            vocabulary: [
+                { title: "Phần 1: Thời gian làm việc, ngày nghỉ", items: [
+                    { japanese: "いま", hiragana: "いま", vietnamese: "Bây giờ" },
+                    { japanese: "ごぜん", hiragana: "ごぜん", vietnamese: "Buổi sáng / AM" },
+                    { japanese: "ごご", hiragana: "ごご", vietnamese: "Buổi chiều / PM" },
+                    { japanese: "ひる", hiragana: "ひる", vietnamese: "Buổi trưa" },
+                    { japanese: "ぎんこう", hiragana: "ぎんこう", vietnamese: "Ngân hàng" },
+                    { japanese: "たいいくかん", hiragana: "たいいくかん", vietnamese: "Nhà thi đấu, Nhà tập thể dục" },
+                    { japanese: "としょかん", hiragana: "としょかん", vietnamese: "Thư viện" },
+                    { japanese: "びょういん", hiragana: "びょういん", vietnamese: "Bệnh viện" },
+                    { japanese: "ゆうびんきょく", hiragana: "ゆうびんきょく", vietnamese: "Bưu điện" },
+                    { japanese: "じゅぎょう", hiragana: "じゅぎょう", vietnamese: "Giờ học" },
+                    { japanese: "テスト", hiragana: "テスト", vietnamese: "Bài kiểm tra" },
+                    { japanese: "やすみ", hiragana: "やすみ", vietnamese: "Nghỉ / Ngày nghỉ" },
+                    { japanese: "時間", hiragana: "じかん", vietnamese: "Thời gian / Giờ giấc" },
+                    { japanese: "〜分", hiragana: "〜ふん/ぷん", vietnamese: "〜 phút" },
+                    { japanese: "〜時半", hiragana: "〜じはん", vietnamese: "〜 giờ rưỡi" },
+                    { japanese: "月曜日", hiragana: "げつようび", vietnamese: "Thứ 2" },
+                    { japanese: "火曜日", hiragana: "かようび", vietnamese: "Thứ 3" },
+                    { japanese: "水曜日", hiragana: "すいようび", vietnamese: "Thứ 4" },
+                    { japanese: "木曜日", hiragana: "もくようび", vietnamese: "Thứ 5" },
+                    { japanese: "金曜日", hiragana: "きんようび", vietnamese: "Thứ 6" },
+                    { japanese: "土曜日", hiragana: "どようび", vietnamese: "Thứ 7" },
+                    { japanese: "日曜日", hiragana: "にちようび", vietnamese: "Chủ nhật" },
+                    { japanese: "何曜日", hiragana: "なんようび", vietnamese: "Thứ mấy" },
+                ]},
+                { title: "Phần 2: Lịch trình của tôi", items: [
+                    { japanese: "スケジュール", hiragana: "スケジュール", vietnamese: "Kế hoạch, lịch" },
+                    { japanese: "アルバイト", hiragana: "アルバイト", vietnamese: "Việc làm thêm" },
+                    { japanese: "スキー", hiragana: "スキー", vietnamese: "Trượt tuyết" },
+                    { japanese: "パーティー", hiragana: "パーティー", vietnamese: "Bữa tiệc" },
+                    { japanese: "バーベキュー", hiragana: "バーベキュー", vietnamese: "Tiệc nướng ngoài trời" },
+                    { japanese: "はなび", hiragana: "はなび", vietnamese: "Pháo hoa" },
+                    { japanese: "おまつり", hiragana: "おまつり", vietnamese: "Lễ hội" },
+                    { japanese: "うみ", hiragana: "うみ", vietnamese: "Biển" },
+                    { japanese: "こうえん", hiragana: "こうえん", vietnamese: "Công viên" },
+                    { japanese: "さくら", hiragana: "さくら", vietnamese: "Hoa anh đào" },
+                    { japanese: "おさけ", hiragana: "おさけ", vietnamese: "Rượu (Nhật)" },
+                    { japanese: "おすし", hiragana: "おすし", vietnamese: "Món sushi" },
+                    { japanese: "バス", hiragana: "バス", vietnamese: "Xe buýt" },
+                    { japanese: "おべんとう", hiragana: "おべんとう", vietnamese: "Cơm hộp" },
+                    { japanese: "１年", hiragana: "いちねん", vietnamese: "1 năm" },
+                    { japanese: "はる", hiragana: "はる", vietnamese: "Mùa xuân" },
+                    { japanese: "なつ", hiragana: "なつ", vietnamese: "Mùa hạ" },
+                    { japanese: "あき", hiragana: "あき", vietnamese: "Mùa thu" },
+                    { japanese: "ふゆ", hiragana: "ふゆ", vietnamese: "Mùa đông" },
+                    { japanese: "ゴールデンウィーク", hiragana: "ゴールデンウィーク", vietnamese: "Tuần lễ vàng" },
+                    { japanese: "何", hiragana: "なに", vietnamese: "Cái gì" },
+                    { japanese: "いきます", hiragana: "いきます", vietnamese: "Đi" },
+                    { japanese: "かえります", hiragana: "かえります", vietnamese: "Về, trở về" },
+                    { japanese: "のみます", hiragana: "のみます", vietnamese: "Uống" },
+                    { japanese: "たべます", hiragana: "たべます", vietnamese: "Ăn" },
+                    { japanese: "みます", hiragana: "みます", vietnamese: "Xem, nhìn" },
+                    { japanese: "します", hiragana: "します", vietnamese: "Làm, chơi, tổ chức" },
+                    { japanese: "いいですね", hiragana: "いいですね", vietnamese: "Hay quá nhỉ!" },
+                ]},
+                { title: "Phần 3: Mỗi ngày như thế nào", items: [
+                    { japanese: "あさ", hiragana: "あさ", vietnamese: "Buổi sáng" },
+                    { japanese: "よる", hiragana: "よる", vietnamese: "Buổi tối, đêm" },
+                    { japanese: "まいにち", hiragana: "まいにち", vietnamese: "Hàng ngày" },
+                    { japanese: "まいあさ", hiragana: "まいあさ", vietnamese: "Hàng sáng" },
+                    { japanese: "まいばん", hiragana: "まいばん", vietnamese: "Mỗi tối" },
+                    { japanese: "あさごはん", hiragana: "あさごはん", vietnamese: "Bữa sáng" },
+                    { japanese: "ひるごはん", hiragana: "ひるごはん", vietnamese: "Bữa trưa" },
+                    { japanese: "うち", hiragana: "うち", vietnamese: "Nhà, ngôi nhà" },
+                    { japanese: "かいしゃ", hiragana: "かいしゃ", vietnamese: "Công ty" },
+                    { japanese: "学校", hiragana: "がっこう", vietnamese: "Trường học" },
+                    { japanese: "コンビニ", hiragana: "コンビニ", vietnamese: "Cửa hàng tiện lợi" },
+                    { japanese: "ぎゅうにゅう", hiragana: "ぎゅうにゅう", vietnamese: "Sữa bò" },
+                    { japanese: "くだもの", hiragana: "くだもの", vietnamese: "Hoa quả, trái cây" },
+                    { japanese: "サラダ", hiragana: "サラダ", vietnamese: "Món salad" },
+                    { japanese: "チーズ", hiragana: "チーズ", vietnamese: "Pho-mát" },
+                    { japanese: "インターネット", hiragana: "インターネット", vietnamese: "Mạng internet" },
+                    { japanese: "しんぶん", hiragana: "しんぶん", vietnamese: "Báo, tờ báo" },
+                    { japanese: "テレビ", hiragana: "テレビ", vietnamese: "Ti vi" },
+                    { japanese: "CD", hiragana: "CD", vietnamese: "CD, DVD" },
+                    { japanese: "何も", hiragana: "なにも", vietnamese: "Cái gì cũng..." },
+                    { japanese: "どこ（へ）も", hiragana: "どこ（へ）も", vietnamese: "Đâu cũng..." },
+                    { japanese: "かいます", hiragana: "かいます", vietnamese: "Mua" },
+                    { japanese: "ききます", hiragana: "ききます", vietnamese: "Nghe" },
+                    { japanese: "はたらきます", hiragana: "はたらきます", vietnamese: "Làm việc, lao động" },
+                    { japanese: "よみます", hiragana: "よみます", vietnamese: "Đọc" },
+                    { japanese: "ねます", hiragana: "ねます", vietnamese: "Ngủ" },
+                    { japanese: "べんきょうします", hiragana: "べんきょうします", vietnamese: "Học, học bài" },
+                    { japanese: "きます", hiragana: "きます", vietnamese: "Tới, đến" },
+                ]}
+            ],
+            kanji: [
+                { character: '月', hanViet: 'NGUYỆT', meaning: 'Mặt trăng, tháng', examples: [{ word: '月曜日', reading: 'げつようび', meaning: 'Thứ Hai' }, { word: '一月', reading: 'いちがつ', meaning: 'Tháng 1' }] },
+                { character: '火', hanViet: 'HỎA', meaning: 'Lửa', examples: [{ word: '火曜日', reading: 'かようび', meaning: 'Thứ Ba' }] },
+                { character: '水', hanViet: 'THỦY', meaning: 'Nước', examples: [{ word: '水曜日', reading: 'すいようび', meaning: 'Thứ Tư' }] },
+                { character: '木', hanViet: 'MỘC', meaning: 'Cây, gỗ', examples: [{ word: '木曜日', reading: 'もくようび', meaning: 'Thứ Năm' }] },
+                { character: '金', hanViet: 'KIM', meaning: 'Vàng, tiền', examples: [{ word: '金曜日', reading: 'きんようび', meaning: 'Thứ Sáu' }] },
+                { character: '土', hanViet: 'THỔ', meaning: 'Đất', examples: [{ word: '土曜日', reading: 'どようび', meaning: 'Thứ Bảy' }] },
+                { character: '曜', hanViet: 'DIỆU', meaning: 'Ngày (trong tuần)', examples: [{ word: '日曜日', reading: 'にちようび', meaning: 'Chủ Nhật' }] },
+                { character: '何', hanViet: 'HÀ', meaning: 'Cái gì', examples: [{ word: '何曜日', reading: 'なんようび', meaning: 'Thứ mấy' }, { word: '何才', reading: 'なんさい', meaning: 'Mấy tuổi' }] },
+                { character: '年', hanViet: 'NIÊN', meaning: 'Năm', examples: [{ word: '一年', reading: 'いちねん', meaning: '1 năm' }, { word: '四年', reading: 'よねん', meaning: '4 năm' }] },
+                { character: '時', hanViet: 'THỜI', meaning: 'Giờ, thời gian', examples: [{ word: '四時', reading: 'よじ', meaning: '4 giờ' }, { word: '何時', reading: 'なんじ', meaning: 'Mấy giờ' }] },
+                { character: '間', hanViet: 'GIAN', meaning: 'Khoảng giữa, trung gian', examples: [{ word: '時間', reading: 'じかん', meaning: 'Thời gian' }] },
+                { character: '分', hanViet: 'PHÂN', meaning: 'Phút, chia, hiểu', examples: [{ word: '三分', reading: 'さんぷん', meaning: '3 phút' }, { word: '分かります', reading: 'わかります', meaning: 'Hiểu' }] },
+            ],
+            grammar: [
+                { pattern: "Vます／Vません", meaning: "Sẽ V / Không V", explanation: "Khẳng định/phủ định một hành động ở hiện tại hoặc tương lai.", vietnamese: "アンナさんは まいにち あさごはんを たべますか。・・はい、たべます。/ いいえ、たべません。", japanese: "Anna san wa mainichi asagohan o tabemasu ka. ... Hai, tabemasu. / Iie, tabemasen." },
+                { pattern: "N (Địa điểm) へ いきます／きます／かえります", meaning: "Đi/Đến/Về đến địa điểm N", explanation: "Chỉ hướng của hành động.", vietnamese: "私は 日曜日 としょかんへ いきます。", japanese: "Watashi wa nichiyoubi ni toshokan e ikimasu." },
+                { pattern: "N (Vật/tân ngữ) を Vます", meaning: "Hành động V được thực hiện lên một đối tượng N", explanation: "Trợ từ を chỉ đối tượng của hành động.", vietnamese: "私は まいあさ、コーヒーを のみます。", japanese: "Watashi wa maiasa, koohii o nomimasu." },
+                { pattern: "N (giờ) に Vます", meaning: "Hành động V xảy ra VÀO giờ, thời gian cụ thể", explanation: "Trợ từ に chỉ thời điểm xảy ra hành động.", vietnamese: "私は まいあさ 8時に おきます。", japanese: "Watashi wa maiasa hachi-ji ni okimasu." },
+                { pattern: "N (Địa điểm) で Vます", meaning: "Hành động V xảy ra Ở một địa điểm cụ thể", explanation: "Trợ từ で chỉ nơi diễn ra hành động.", vietnamese: "ほっかいどうで スキーを します。", japanese: "Hokkaido de sukii o shimasu." },
+                { pattern: "N (Giờ/Thứ) から N (Giờ/Thứ) まで", meaning: "Từ thời gian ~ đến thời gian ~", explanation: "Chỉ khoảng thời gian.", vietnamese: "ゆうびんきょくは ごぜん9時から ごご5時までです。", japanese: "Yuubinkyoku wa gozen ku-ji kara gogo go-ji made desu." },
+                { pattern: "N1 や N2 など", meaning: "Liệt kê các đối tượng đại diện, không cần liệt kê hết.", explanation: "Liệt kê ví dụ điển hình.", vietnamese: "私は あさ、パンや サラダなどを たべます。", japanese: "Watashi wa asa, pan ya sarada nado o tabemasu." },
+                { pattern: "何も Vません。どこ(へ)も Vません", meaning: "Không làm gì cả. Không đi đâu cả", explanation: "Phủ định hoàn toàn.", vietnamese: "あさ、何も たべません。きのう、どこへも いきませんでした。", japanese: "Asa, nani mo tabemasen. Kinou, doko e mo ikimasendeshita." }
+            ]
+        }
     ];
 
     // --- STATE MANAGEMENT ---
     let state = {
-        currentView: 'home', // 'home', 'vocabulary', 'flashcard', 'quiz'
+        currentView: 'home', // 'home', 'vocabulary', 'flashcard', 'quiz', 'grammar'
         currentLesson: null, // 1, 2, 3
     };
 
@@ -165,6 +496,7 @@
 
     // --- ICONS ---
     const BookIcon = () => `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>`;
+    const GrammarIcon = () => `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" /></svg>`;
     const CardStackIcon = () => `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>`;
     const QuizIcon = () => `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>`;
     const BackIcon = () => `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>`;
@@ -187,8 +519,8 @@
     const HomeView = () => `
         <div class="animate-fade-in text-center">
             <header class="mb-8">
-                <h1 class="text-4xl md:text-5xl font-bold text-gray-800">Học Từ Vựng Tiếng Nhật</h1>
-                <p class="mt-4 text-lg text-gray-600">Chọn một bài học để bắt đầu ôn tập.</p>
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-800">Học Tiếng Nhật Toàn Diện</h1>
+                <p class="mt-4 text-lg text-gray-600">Chọn một bài học để bắt đầu ôn tập từ vựng và ngữ pháp.</p>
             </header>
 
             <div class="animate-slide-in-up max-w-2xl mx-auto mb-12 bg-white rounded-xl shadow-lg p-6 border border-rose-100 flex flex-col sm:flex-row items-center gap-6">
@@ -201,7 +533,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                 ${[1, 2, 3].map(lessonNum => `
                     <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-shadow duration-300">
                         <h2 class="text-2xl font-bold text-teal-600 mb-6">Bài ${lessonNum}</h2>
@@ -210,13 +542,17 @@
                                 ${BookIcon()}
                                 <span>Học Từ Vựng</span>
                             </button>
+                             <button data-lesson="${lessonNum}" data-mode="grammar" class="w-full flex items-center justify-center gap-3 bg-indigo-500 text-white font-semibold px-4 py-3 rounded-lg hover:bg-indigo-600 transition-colors transform hover:-translate-y-1 duration-300">
+                                ${GrammarIcon()}
+                                <span>Học Ngữ Pháp</span>
+                            </button>
                             <button data-lesson="${lessonNum}" data-mode="flashcard" class="w-full flex items-center justify-center gap-3 bg-sky-500 text-white font-semibold px-4 py-3 rounded-lg hover:bg-sky-600 transition-colors transform hover:-translate-y-1 duration-300">
                                 ${CardStackIcon()}
                                 <span>Học qua Flashcard</span>
                             </button>
                             <button data-lesson="${lessonNum}" data-mode="quiz" class="w-full flex items-center justify-center gap-3 bg-amber-500 text-white font-semibold px-4 py-3 rounded-lg hover:bg-amber-600 transition-colors transform hover:-translate-y-1 duration-300">
                                 ${QuizIcon()}
-                                <span>Kiểm Tra</span>
+                                <span>Kiểm Tra Từ Vựng</span>
                             </button>
                         </div>
                     </div>
@@ -277,6 +613,50 @@
                         </div>
                     </div>
                 ` : ''}
+                </div>
+            </div>
+        `;
+    };
+    
+    const GrammarListView = (lessonNumber) => {
+        const lesson = lessons[lessonNumber - 1];
+        if (!lesson || !lesson.grammar) return `<div>Ngữ pháp cho bài này không tồn tại.</div>`;
+        return `
+            <div class="animate-fade-in relative">
+                <div class="back-button-container">
+                    <button data-mode="home" class="flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium">
+                        ${BackIcon()}
+                        <span>Quay Lại</span>
+                    </button>
+                </div>
+                <header class="mb-12 text-center pt-8">
+                    <h1 class="text-4xl font-bold text-gray-800">Ngữ pháp - Bài ${lessonNumber}</h1>
+                </header>
+                <div class="max-w-6xl mx-auto">
+                    <div class="overflow-x-auto bg-white rounded-lg shadow border border-gray-200">
+                        <table class="w-full text-sm text-left text-gray-600">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">Mẫu câu</th>
+                                    <th scope="col" class="px-6 py-3">Ý nghĩa</th>
+                                    <th scope="col" class="px-6 py-3">Giải thích</th>
+                                    <th scope="col" class="px-6 py-3">Tiếng Việt</th>
+                                    <th scope="col" class="px-6 py-3">Tiếng Nhật</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${lesson.grammar.map(rule => `
+                                    <tr class="bg-white border-b hover:bg-gray-50">
+                                        <td class="px-6 py-4 font-bold text-gray-900">${rule.pattern}</td>
+                                        <td class="px-6 py-4">${rule.meaning}</td>
+                                        <td class="px-6 py-4">${rule.explanation}</td>
+                                        <td class="px-6 py-4">${rule.vietnamese}</td>
+                                        <td class="px-6 py-4">${rule.japanese}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         `;
@@ -350,9 +730,8 @@
                 </div>
 
                 <div id="question-area">
-                    <p class="text-gray-600 mb-2">Từ sau có nghĩa là gì?</p>
-                    <p id="quiz-question" class="text-3xl font-bold text-gray-800 mb-6 text-center py-4 bg-gray-50 rounded-lg"></p>
-
+                    <p id="quiz-question-prompt" class="text-lg text-center text-gray-700 mb-6"></p>
+                    
                     <input type="text" id="quiz-input" placeholder="Nhập câu trả lời (tiếng Nhật)"
                         class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition"
                         autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
@@ -386,6 +765,9 @@
         switch (state.currentView) {
             case 'vocabulary':
                 appContainer.innerHTML = VocabularyListView(state.currentLesson);
+                break;
+            case 'grammar':
+                appContainer.innerHTML = GrammarListView(state.currentLesson);
                 break;
             case 'flashcard':
                 appContainer.innerHTML = FlashcardView(state.currentLesson);
@@ -517,7 +899,7 @@
         const quizContainer = document.getElementById('quiz-container');
         const resultsContainer = document.getElementById('results-container');
         const quizProgressEl = document.getElementById('quiz-progress');
-        const quizQuestionEl = document.getElementById('quiz-question');
+        const quizQuestionPromptEl = document.getElementById('quiz-question-prompt');
         const quizInput = document.getElementById('quiz-input');
         const feedbackArea = document.getElementById('feedback-area');
         const checkBtn = document.getElementById('check-answer-btn');
@@ -532,8 +914,9 @@
         };
 
         const updateQuizUI = () => {
+            const currentQuestion = shuffledQuestions[currentIndex];
             quizProgressEl.textContent = `Câu ${currentIndex + 1} / ${shuffledQuestions.length}`;
-            quizQuestionEl.textContent = shuffledQuestions[currentIndex].vietnamese;
+            quizQuestionPromptEl.innerHTML = `Từ tiếng Nhật của <strong class="text-amber-700">"${currentQuestion.vietnamese}"</strong> là gì?`;
             quizInput.value = '';
             quizInput.disabled = false;
             feedbackArea.innerHTML = '';
@@ -560,6 +943,7 @@
         };
 
         const checkAnswer = () => {
+            if (!quizInput.value) return;
             const userAnswer = quizInput.value.trim();
             const correctAnswer = shuffledQuestions[currentIndex];
             
@@ -615,7 +999,6 @@
             }
         });
         
-        // Add keydown listener to the whole quiz container for the 'Next' button
         quizContainer.addEventListener('keydown', (e) => {
              if (e.key === 'Enter' && !nextBtn.classList.contains('hidden')) {
                 e.preventDefault();
@@ -644,8 +1027,70 @@
         }
     });
 
-    // --- INITIAL RENDER ---
+    // --- IMMERSIVE FEATURES ---
+    let dynamicStyleSheet = null;
+    const setupSakura = () => {
+        if (!dynamicStyleSheet) {
+            const styleEl = document.createElement('style');
+            document.head.appendChild(styleEl);
+            dynamicStyleSheet = styleEl.sheet;
+        }
+
+        const sakuraContainer = document.getElementById('sakura-container');
+        if(sakuraContainer.children.length > 0) return; // Already setup
+
+        const sakuraCount = 30;
+        for (let i = 0; i < sakuraCount; i++) {
+            const sakuraEl = document.createElement('div');
+            sakuraEl.classList.add('sakura');
+            sakuraEl.style.left = `${Math.random() * 100}vw`;
+            const duration = Math.random() * 5 + 8; // 8 to 13 seconds
+            sakuraEl.style.animationDuration = `${duration}s`;
+            sakuraEl.style.animationDelay = `${Math.random() * 10}s`;
+            sakuraEl.style.opacity = Math.random();
+            sakuraEl.style.transform = `scale(${Math.random() * 0.5 + 0.5})`;
+            
+            const swayAnimationName = `sway${i}`;
+            const swayKeyframes = `
+                @keyframes ${swayAnimationName} {
+                    0%, 100% { transform: translateX(0); }
+                    50% { transform: translateX(${Math.random() * 40 - 20}px); }
+                }
+            `;
+            try {
+                dynamicStyleSheet.insertRule(swayKeyframes, dynamicStyleSheet.cssRules.length);
+                sakuraEl.style.animationName = `fall, ${swayAnimationName}`;
+                sakuraEl.style.animationTimingFunction = `linear, ease-in-out`;
+                sakuraEl.style.animationIterationCount = `infinite, infinite`;
+            } catch (e) {
+                console.error("Could not insert CSS rule: ", e);
+            }
+
+            sakuraContainer.appendChild(sakuraEl);
+        }
+    };
+    
+    const setupMusicPlayer = () => {
+        const player = document.getElementById('music-player');
+        const audio = document.getElementById('bg-music');
+        const cdIcon = document.getElementById('cd-icon');
+
+        player.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                cdIcon.classList.add('spinning');
+            } else {
+                audio.pause();
+                cdIcon.classList.remove('spinning');
+            }
+        });
+    };
+
+
+    // --- INITIAL RENDER & SETUP ---
     render();
+    setupSakura();
+    setupMusicPlayer();
 
     </script>
 </body>
