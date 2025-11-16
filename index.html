@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Học Từ Vựng Tiếng Nhật</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        .back-button-container {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            z-index: 10;
+        }
+        /* Flashcard styles */
+        .flashcard-scene {
+            perspective: 1000px;
+        }
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        .flashcard.is-flipped {
+            transform: rotateY(180deg);
+        }
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+        }
+        .flashcard-front {
+            background-color: white;
+        }
+        .flashcard-back {
+            background-color: #f0fdfa; /* teal-50 */
+            transform: rotateY(180deg);
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="app-container" class="min-h-screen p-4 sm:p-6 lg:p-8"></div>
+
+    <script type="module">
+    // --- DATA ---
+    const lessons = [
+        { // Lesson 1
+            vocabulary: [
+                {
+                    title: 'Phần 1: Tên - Đất nước - Công việc',
+                    items: [
+                        { japanese: '私', hiragana: 'わたし', vietnamese: 'Tôi' },
+                        { japanese: 'なまえ', hiragana: 'なまえ', vietnamese: 'Tên' },
+                        { japanese: 'くに', hiragana: 'くに', vietnamese: 'Đất nước' },
+                        { japanese: '日本', hiragana: 'にほん', vietnamese: 'Nhật Bản' },
+                        { japanese: 'かんこく', hiragana: 'かんこく', vietnamese: 'Hàn Quốc' },
+                        { japanese: 'ちゅうごく', hiragana: 'ちゅうごく', vietnamese: 'Trung Quốc' },
+                        { japanese: 'アメリカ', hiragana: 'アメリカ', vietnamese: 'Mỹ' },
+                        { japanese: 'イタリア', hiragana: 'イタリア', vietnamese: 'Ý' },
+                        { japanese: 'オーストラリア', hiragana: 'オーストラリア', vietnamese: 'Úc' },
+                        { japanese: 'ロシア', hiragana: 'ロシア', vietnamese: 'Nga' },
+                        { japanese: 'タイ', hiragana: 'タイ', vietnamese: 'Thái Lan' },
+                        { japanese: '高校', hiragana: 'こうこう', vietnamese: 'Trường trung học phổ thông (cấp 3)' },
+                        { japanese: '大学', hiragana: 'だいがく', vietnamese: 'Trường đại học' },
+                        { japanese: '日本語学校', hiragana: 'にほんごがっこう', vietnamese: 'Trường tiếng Nhật' },
+                        { japanese: 'しごと', hiragana: 'しごと', vietnamese: 'Công việc' },
+                        { japanese: '学生', hiragana: 'がくせい', vietnamese: 'Học sinh' },
+                        { japanese: '先生', hiragana: 'せんせい', vietnamese: 'Thầy/Cô giáo' },
+                        { japanese: 'きょうし', hiragana: 'きょうし', vietnamese: 'Giáo viên' },
+                        { japanese: 'かいしゃいん', hiragana: 'かいしゃいん', vietnamese: 'Nhân viên công ty nói chung' },
+                        { japanese: 'しゃいん', hiragana: 'しゃいん', vietnamese: 'Nhân viên (của công ty cụ thể)' },
+                        { japanese: '〜さん', hiragana: '〜さん', vietnamese: 'Anh/Chị/Ông/Bà/Bạn ~' },
+                        { japanese: '〜人', hiragana: '〜じん', vietnamese: 'Người (nước nào)' },
+                        { japanese: 'どちら', hiragana: 'どちら', vietnamese: 'Ở đâu / Phía nào' },
+                        { japanese: 'はじめまして', hiragana: 'はじめまして', vietnamese: 'Xin chào (lần đầu gặp mặt)' },
+                        { japanese: 'よろしくお願いします', hiragana: 'よろしくおねがいします', vietnamese: 'Rất mong nhận được sự giúp đỡ của bạn' },
+                        { japanese: 'こちらこそ', hiragana: 'こちらこそ', vietnamese: 'Tôi cũng vậy!' },
+                        { japanese: 'あのう', hiragana: 'あのう', vietnamese: 'Anh / chị ơi...' },
+                        { japanese: 'すみません', hiragana: 'すみません', vietnamese: 'Xin lỗi... cho tôi hỏi...' },
+                        { japanese: 'そうですか', hiragana: 'そうですか', vietnamese: 'Thế à!' },
+                    ]
+                },
+                {
+                    title: 'Phần 2: Sinh nhật',
+                    items: [
+                        { japanese: '誕生日', hiragana: 'たんじょうび', vietnamese: 'Ngày sinh / Sinh nhật' },
+                        { japanese: 'ブラジル', hiragana: 'ブラジル', vietnamese: 'Brazil' },
+                        { japanese: 'いつ', hiragana: 'いつ', vietnamese: 'Lúc nào / Khi nào' },
+                    ]
+                },
+                {
+                    title: 'Phần 3: Sở thích',
+                    items: [
+                        { japanese: 'しゅみ', hiragana: 'しゅみ', vietnamese: 'Sở thích' },
+                        { japanese: 'スポーツ', hiragana: 'スポーツ', vietnamese: 'Thể thao' },
+                    ]
+                }
+            ],
+            kanji: [
+                 { character: '私', hanViet: 'TƯ', meaning: 'Tôi, riêng tư', examples: [{ word: '私', meaning: 'Tôi', reading: 'わたし' }] },
+                 { character: '人', hanViet: 'NHÂN', meaning: 'Người', examples: [{ word: '1人', meaning: '1 người', reading: 'ひとり' }, { word: '2人', meaning: '2 người', reading: 'ふたり' }] },
+            ]
+        },
+        { vocabulary: [], kanji: [] },
+        { vocabulary: [], kanji: [] }
+    ];
+
+    // --- STATE MANAGEMENT ---
+    let state = {
+        currentView: 'home', // 'home', 'vocabulary', 'flashcard', 'quiz'
+        currentLesson: null, // 1, 2, 3
+    };
+
+    const setState = (newState) => {
+        state = { ...state, ...newState };
+        render();
+    };
+
+    // --- ICONS ---
+    const BookIcon = () => `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>`;
+    const CardStackIcon = () => `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>`;
+    const QuizIcon = () => `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>`;
+    const BackIcon = () => `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>`;
+    const SpeakerIcon = () => `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>`;
+    const ShuffleIcon = () => `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H9m0 0l3 3m-3-3l3-3m5 13H5a2 2 0 01-2-2V6a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" /></svg>`;
+    const RestartIcon = () => `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M20 20v-5h-5M4 4l1.5 1.5A9 9 0 0120.5 10.5M20 20l-1.5-1.5A9 9 0 003.5 13.5" /></svg>`;
+
+
+    // --- VIEW TEMPLATES ---
+    const HomeView = () => `
+        <div class="animate-fade-in text-center">
+            <header class="mb-12">
+                <h1 class="text-4xl md:text-5xl font-bold text-gray-800">Học Từ Vựng Tiếng Nhật</h1>
+                <p class="mt-4 text-lg text-gray-600">Chọn một bài học để bắt đầu ôn tập.</p>
+            </header>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                ${[1, 2, 3].map(lessonNum => `
+                    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-shadow duration-300">
+                        <h2 class="text-2xl font-bold text-teal-600 mb-6">Bài ${lessonNum}</h2>
+                        <div class="space-y-4">
+                            <button data-lesson="${lessonNum}" data-mode="vocabulary" class="w-full flex items-center justify-center gap-3 bg-teal-500 text-white font-semibold px-4 py-3 rounded-lg hover:bg-teal-600 transition-colors transform hover:-translate-y-1 duration-300">
+                                ${BookIcon()}
+                                <span>Học Từ Vựng</span>
+                            </button>
+                            <button data-lesson="${lessonNum}" data-mode="flashcard" class="w-full flex items-center justify-center gap-3 bg-sky-500 text-white font-semibold px-4 py-3 rounded-lg hover:bg-sky-600 transition-colors transform hover:-translate-y-1 duration-300">
+                                ${CardStackIcon()}
+                                <span>Học qua Flashcard</span>
+                            </button>
+                            <button data-lesson="${lessonNum}" data-mode="quiz" class="w-full flex items-center justify-center gap-3 bg-amber-500 text-white font-semibold px-4 py-3 rounded-lg hover:bg-amber-600 transition-colors transform hover:-translate-y-1 duration-300">
+                                ${QuizIcon()}
+                                <span>Kiểm Tra</span>
+                            </button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+
+    const VocabularyListView = (lessonNumber) => {
+        const lesson = lessons[lessonNumber - 1];
+        if (!lesson) return `<div>Bài học không tồn tại.</div>`;
+        return `
+            <div class="animate-fade-in relative">
+                <div class="back-button-container">
+                    <button data-mode="home" class="flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium">
+                        ${BackIcon()}
+                        <span>Quay Lại</span>
+                    </button>
+                </div>
+                <header class="mb-12 text-center pt-8">
+                    <h1 class="text-4xl font-bold text-gray-800">Từ vựng - Bài ${lessonNumber}</h1>
+                </header>
+                <div class="max-w-4xl mx-auto">
+                ${lesson.vocabulary.map(part => `
+                    <div class="mb-10">
+                        <h2 class="text-2xl font-semibold text-teal-700 border-b-2 border-teal-200 pb-2 mb-6">${part.title}</h2>
+                        <div class="space-y-3">
+                            ${part.items.map(item => `
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1 p-3 rounded-lg bg-white border border-gray-200">
+                                    <div class="font-semibold text-gray-800">
+                                        ${item.japanese}
+                                        ${item.hiragana ? `<span class="ml-3 text-sm font-normal text-gray-500">(${item.hiragana})</span>` : ''}
+                                    </div>
+                                    <div class="text-gray-600 md:pl-2">${item.vietnamese}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('')}
+
+                ${lesson.kanji && lesson.kanji.length > 0 ? `
+                    <div class="mb-10">
+                        <h2 class="text-2xl font-semibold text-teal-700 border-b-2 border-teal-200 pb-2 mb-6">Kanji - Bài ${lessonNumber}</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            ${lesson.kanji.map(kanji => `
+                                <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
+                                    <div class="flex items-start gap-4">
+                                        <div class="text-5xl font-bold text-teal-600">${kanji.character}</div>
+                                        <div class="flex-1">
+                                            <p class="font-semibold text-lg text-gray-800">${kanji.hanViet} - ${kanji.meaning}</p>
+                                            <div class="mt-2 space-y-1 text-sm">
+                                                ${kanji.examples.map(ex => `<p class="text-gray-600"><span class="font-medium">${ex.word} (${ex.reading}):</span> ${ex.meaning}</p>`).join('')}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+                </div>
+            </div>
+        `;
+    };
+
+    const FlashcardView = (lessonNumber) => {
+        return `
+            <div class="animate-fade-in relative flex flex-col items-center justify-center min-h-[90vh]">
+                <div class="back-button-container">
+                    <button data-mode="home" class="flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium">
+                        ${BackIcon()}
+                        <span>Quay Lại</span>
+                    </button>
+                </div>
+                
+                <div id="flashcard-header" class="w-full max-w-md lg:max-w-xl mb-4 text-right">
+                    <p id="progress-counter" class="text-lg font-semibold text-gray-600"></p>
+                </div>
+
+                <div class="w-full max-w-md lg:max-w-xl h-64 lg:h-80 flashcard-scene">
+                    <div id="flashcard" class="flashcard">
+                        <div class="flashcard-face flashcard-front">
+                            <div class="absolute top-4 right-4">
+                                <button id="speak-button" class="text-gray-400 hover:text-sky-500 transition-colors">${SpeakerIcon()}</button>
+                            </div>
+                            <div class="text-center">
+                                <p id="flashcard-japanese" class="text-4xl lg:text-5xl font-bold text-gray-800"></p>
+                                <p id="flashcard-hiragana" class="mt-2 text-lg text-gray-500"></p>
+                            </div>
+                        </div>
+                        <div class="flashcard-face flashcard-back">
+                             <p id="flashcard-vietnamese" class="text-3xl lg:text-4xl font-bold text-teal-800 text-center"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="flashcard-controls" class="mt-8 flex items-center justify-center gap-4 w-full max-w-md lg:max-w-xl">
+                    <button id="prev-card" class="p-4 bg-white rounded-full shadow-md hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                    </button>
+                    
+                    <div class="flex items-center gap-2">
+                         <button id="shuffle-deck" class="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 font-semibold rounded-lg shadow-md hover:bg-gray-100 transition">
+                            ${ShuffleIcon()} Xáo trộn
+                         </button>
+                         <button id="restart-deck" class="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 font-semibold rounded-lg shadow-md hover:bg-gray-100 transition">
+                            ${RestartIcon()} Làm lại
+                         </button>
+                    </div>
+
+                    <button id="next-card" class="p-4 bg-white rounded-full shadow-md hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                    </button>
+                </div>
+            </div>
+        `;
+    };
+
+    const QuizView = (lessonNumber) => `
+        <div class="animate-fade-in relative flex flex-col items-center justify-start min-h-[90vh] py-10">
+            <div class="back-button-container">
+                <button data-mode="home" class="flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium">
+                    ${BackIcon()} <span>Quay Lại</span>
+                </button>
+            </div>
+            
+            <div id="quiz-container" class="w-full max-w-xl bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-amber-600">Kiểm Tra - Bài ${lessonNumber}</h2>
+                    <p id="quiz-progress" class="text-lg font-semibold text-gray-600"></p>
+                </div>
+
+                <div id="question-area">
+                    <p class="text-gray-600 mb-2">Từ sau có nghĩa là gì?</p>
+                    <p id="quiz-question" class="text-3xl font-bold text-gray-800 mb-6 text-center py-4 bg-gray-50 rounded-lg"></p>
+
+                    <input type="text" id="quiz-input" placeholder="Nhập câu trả lời (tiếng Nhật)"
+                        class="w-full px-4 py-3 text-lg border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition"
+                        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+
+                    <div id="feedback-area" class="mt-4 min-h-[3rem]"></div>
+
+                    <div class="mt-4 flex gap-4">
+                         <button id="check-answer-btn" class="w-full bg-amber-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-amber-600 transition">Kiểm Tra</button>
+                         <button id="next-question-btn" class="w-full bg-teal-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-teal-600 transition hidden">Tiếp Tục</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="results-container" class="hidden w-full max-w-xl text-center bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Kết quả</h2>
+                <p id="score-text" class="text-xl text-gray-600 mb-2"></p>
+                <p id="score-percentage" class="text-5xl font-bold text-teal-600 mb-8"></p>
+                <div class="flex gap-4">
+                    <button id="retry-quiz-btn" class="w-full bg-amber-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-amber-600 transition">Làm lại bài kiểm tra</button>
+                    <button data-mode="home" class="w-full bg-gray-200 text-gray-800 font-bold py-3 px-4 rounded-lg hover:bg-gray-300 transition">Quay về trang chủ</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // --- RENDER LOGIC ---
+    const appContainer = document.getElementById('app-container');
+
+    const render = () => {
+        window.scrollTo(0, 0);
+        switch (state.currentView) {
+            case 'vocabulary':
+                appContainer.innerHTML = VocabularyListView(state.currentLesson);
+                break;
+            case 'flashcard':
+                appContainer.innerHTML = FlashcardView(state.currentLesson);
+                initializeFlashcardLogic(state.currentLesson);
+                break;
+            case 'quiz':
+                appContainer.innerHTML = QuizView(state.currentLesson);
+                initializeQuizLogic(state.currentLesson);
+                break;
+            case 'home':
+            default:
+                appContainer.innerHTML = HomeView();
+        }
+    };
+
+    // --- FLASHCARD LOGIC ---
+    const initializeFlashcardLogic = (lessonNumber) => {
+        const lesson = lessons[lessonNumber - 1];
+        if (!lesson) return;
+
+        const deck = lesson.vocabulary.flatMap(part => part.items);
+        if (deck.length === 0) return;
+
+        let currentIndex = 0;
+        let isFlipped = false;
+        let shuffledDeck = [...deck];
+
+        const flashcardEl = document.getElementById('flashcard');
+        const japaneseEl = document.getElementById('flashcard-japanese');
+        const hiraganaEl = document.getElementById('flashcard-hiragana');
+        const vietnameseEl = document.getElementById('flashcard-vietnamese');
+        const progressCounterEl = document.getElementById('progress-counter');
+        const prevBtn = document.getElementById('prev-card');
+        const nextBtn = document.getElementById('next-card');
+        const shuffleBtn = document.getElementById('shuffle-deck');
+        const restartBtn = document.getElementById('restart-deck');
+        const speakBtn = document.getElementById('speak-button');
+
+        const shuffleArray = (array) => {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        };
+        
+        const speak = (text) => {
+            if (!text || typeof window.speechSynthesis === 'undefined') {
+                console.warn('Speech synthesis not supported.');
+                return;
+            }
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ja-JP';
+            utterance.rate = 0.9;
+            window.speechSynthesis.speak(utterance);
+        };
+
+        const updateUI = () => {
+            const currentCardData = shuffledDeck[currentIndex];
+            japaneseEl.textContent = currentCardData.japanese;
+            hiraganaEl.textContent = `(${currentCardData.hiragana})`;
+            vietnameseEl.textContent = currentCardData.vietnamese;
+            progressCounterEl.textContent = `${currentIndex + 1} / ${shuffledDeck.length}`;
+
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === shuffledDeck.length - 1;
+
+            if (isFlipped) {
+                flashcardEl.classList.remove('is-flipped');
+                isFlipped = false;
+            }
+        };
+        
+        const setup = () => {
+            shuffleArray(shuffledDeck);
+            currentIndex = 0;
+            updateUI();
+        };
+
+        flashcardEl.addEventListener('click', () => {
+            isFlipped = !isFlipped;
+            flashcardEl.classList.toggle('is-flipped');
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateUI();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < shuffledDeck.length - 1) {
+                currentIndex++;
+                updateUI();
+            }
+        });
+        
+        shuffleBtn.addEventListener('click', () => {
+            setup();
+        });
+        
+        restartBtn.addEventListener('click', () => {
+            currentIndex = 0;
+            updateUI();
+        });
+
+        speakBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const currentCardData = shuffledDeck[currentIndex];
+            speak(currentCardData.japanese);
+        });
+        
+        setup();
+    };
+    
+    // --- QUIZ LOGIC ---
+    const initializeQuizLogic = (lessonNumber) => {
+        const lesson = lessons[lessonNumber - 1];
+        if (!lesson) return;
+
+        const questions = lesson.vocabulary.flatMap(part => part.items);
+        if (questions.length === 0) return;
+
+        let currentIndex = 0;
+        let score = 0;
+        let shuffledQuestions = [...questions];
+
+        const quizContainer = document.getElementById('quiz-container');
+        const resultsContainer = document.getElementById('results-container');
+        const quizProgressEl = document.getElementById('quiz-progress');
+        const quizQuestionEl = document.getElementById('quiz-question');
+        const quizInput = document.getElementById('quiz-input');
+        const feedbackArea = document.getElementById('feedback-area');
+        const checkBtn = document.getElementById('check-answer-btn');
+        const nextBtn = document.getElementById('next-question-btn');
+        const retryBtn = document.getElementById('retry-quiz-btn');
+
+        const shuffleArray = (array) => {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        };
+
+        const updateQuizUI = () => {
+            quizProgressEl.textContent = `Câu ${currentIndex + 1} / ${shuffledQuestions.length}`;
+            quizQuestionEl.textContent = shuffledQuestions[currentIndex].vietnamese;
+            quizInput.value = '';
+            quizInput.disabled = false;
+            feedbackArea.innerHTML = '';
+            checkBtn.classList.remove('hidden');
+            nextBtn.classList.add('hidden');
+            quizInput.focus();
+        };
+        
+        const showFeedback = (isCorrect) => {
+            quizInput.disabled = true;
+            checkBtn.classList.add('hidden');
+            nextBtn.classList.remove('hidden');
+            nextBtn.focus();
+            
+            if (isCorrect) {
+                feedbackArea.innerHTML = `<p class="text-green-600 font-semibold">Chính xác!</p>`;
+            } else {
+                const correctAnswer = shuffledQuestions[currentIndex];
+                feedbackArea.innerHTML = `
+                    <p class="text-red-600 font-semibold">Không chính xác.</p>
+                    <p class="text-gray-600">Đáp án đúng: <span class="font-bold">${correctAnswer.japanese} (${correctAnswer.hiragana})</span></p>
+                `;
+            }
+        };
+
+        const checkAnswer = () => {
+            const userAnswer = quizInput.value.trim();
+            const correctAnswer = shuffledQuestions[currentIndex];
+            
+            const isMatch = userAnswer.toLowerCase() === correctAnswer.japanese.toLowerCase() ||
+                            userAnswer.toLowerCase() === correctAnswer.hiragana.toLowerCase();
+
+            if (isMatch) {
+                score++;
+                showFeedback(true);
+            } else {
+                showFeedback(false);
+            }
+        };
+        
+        const showResults = () => {
+            quizContainer.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+            
+            const scoreTextEl = document.getElementById('score-text');
+            const scorePercentageEl = document.getElementById('score-percentage');
+            const percentage = Math.round((score / shuffledQuestions.length) * 100);
+
+            scoreTextEl.textContent = `Bạn đã trả lời đúng ${score} trên ${shuffledQuestions.length} câu.`;
+            scorePercentageEl.textContent = `${percentage}%`;
+        };
+        
+        const nextQuestion = () => {
+             currentIndex++;
+            if (currentIndex < shuffledQuestions.length) {
+                updateQuizUI();
+            } else {
+                showResults();
+            }
+        }
+
+        const setupQuiz = () => {
+            currentIndex = 0;
+            score = 0;
+            shuffleArray(shuffledQuestions);
+            resultsContainer.classList.add('hidden');
+            quizContainer.classList.remove('hidden');
+            updateQuizUI();
+        };
+
+        checkBtn.addEventListener('click', checkAnswer);
+        nextBtn.addEventListener('click', nextQuestion);
+        retryBtn.addEventListener('click', setupQuiz);
+
+        quizInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !checkBtn.classList.contains('hidden')) {
+                e.preventDefault();
+                checkAnswer();
+            }
+        });
+        
+        // Add keydown listener to the whole quiz container for the 'Next' button
+        quizContainer.addEventListener('keydown', (e) => {
+             if (e.key === 'Enter' && !nextBtn.classList.contains('hidden')) {
+                e.preventDefault();
+                nextQuestion();
+            }
+        });
+        
+        setupQuiz();
+    };
+
+
+    // --- EVENT LISTENERS ---
+    appContainer.addEventListener('click', (e) => {
+        const button = e.target.closest('button');
+        if (!button) return;
+
+        const { lesson, mode } = button.dataset;
+
+        if (mode === 'home') {
+            setState({ currentView: 'home', currentLesson: null });
+        } else if (lesson && mode) {
+            setState({
+                currentView: mode,
+                currentLesson: parseInt(lesson, 10)
+            });
+        }
+    });
+
+    // --- INITIAL RENDER ---
+    render();
+
+    </script>
+</body>
+</html>
